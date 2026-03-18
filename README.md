@@ -14,6 +14,23 @@ An extension for the Gemini CLI to interact with Google Cloud's Agent Registry u
 - **Dashboards**: Generate quick views of your Agents and MCP servers using `/dashboard:agents` and `/dashboard:mcp`.
 - **Python ADK Integration**: Specialized support and snippets for the Google Agent Development Kit (ADK).
 
+## Installation
+
+Install the extension by running the following command from your terminal:
+
+```bash
+gemini extensions install https://github.com/srinandan/agent-registry-extension
+```
+
+You can confirm the installation by starting `gemini` and typing `/extensions list`. The response should include `agent-registry` similar to this:
+
+```
+/extensions list
+
+Installed extensions:
+  agent-registry (v1.0.0) -
+```
+
 ## Recommended Setup (Enable MCP Server)
 
 To get the most out of this extension, we highly recommend enabling the native Agent Registry MCP Server in your global `~/.gemini/settings.json`:
