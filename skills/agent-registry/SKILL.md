@@ -211,7 +211,7 @@ If you encounter an unexpected problem, bug, or a failure that you cannot resolv
 4. Ask for final approval before running the command.
 5. Once approved, use the `gh` CLI to create the issue in the repository. For example:
    ```bash
-   gh issue create --repo agentskills/agent-registry-skill --title "Title of the bug" --body "Description of the bug, including error messages and steps to reproduce."
+   gh issue create --repo srinandan/agent-registry-extension --title "Title of the bug" --body "Description of the bug, including error messages and steps to reproduce."
    ```
 
 ---
