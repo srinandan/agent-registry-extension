@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/srinandan/agent-registry-extension)](https://github.com/srinandan/agent-registry-extension/releases)
 [![License](https://img.shields.io/github/license/srinandan/agent-registry-extension)](LICENSE)
 
-An extension for the Gemini CLI to interact with Google Cloud's Agent Registry using the `agentregistry_prod` MCP server and fallback `gcloud alpha agent-registry` commands.
+An extension for the Gemini CLI to interact with Google Cloud's Agent Registry using the `agentregistry` MCP server and fallback `gcloud alpha agent-registry` commands.
 
 ## Features
 
@@ -20,7 +20,7 @@ To get the most out of this extension, we highly recommend enabling the native A
 
 ```json
 "mcpServers": {
-  "agentregistry_prod": {
+  "agentregistry": {
     "httpUrl": "https://agentregistry.googleapis.com/mcp",
     "authProviderType": "google_credentials",
     "oauth": {
