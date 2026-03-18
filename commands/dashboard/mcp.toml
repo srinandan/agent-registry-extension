@@ -1,3 +1,7 @@
 prompt = """
-!{${extensionPath}/scripts/mcp-dashboard.sh}
+Fetch the list of Google Cloud Agent Registry MCP Servers.
+First, check if the `agentregistry` MCP server is available.
+If the `agentregistry` MCP server is available, use the native `list_mcp_servers` or equivalent MCP tool to retrieve the list of MCP servers.
+If the MCP server is not available or the tool fails, fallback to using the `gcloud alpha agent-registry mcp-servers list --format="json"` command via the `run_shell_command` tool.
+Once you have the data, format it as a clear Markdown table containing the server's name, display name, location, tools (if applicable), and runtime. Ensure you present this table directly to the user.
 """
