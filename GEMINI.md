@@ -1,10 +1,10 @@
 # Agent Registry Extension
 
-Welcome to the **Agent Registry** extension for the Gemini CLI! This extension provides you with direct access to Google Cloud's Agent Registry via the remote `agentregistry_prod` MCP server and a set of rich `gcloud` shell command fallback skills.
+Welcome to the **Agent Registry** extension for the Gemini CLI! This extension provides you with direct access to Google Cloud's Agent Registry via the remote `agentregistry` MCP server and a set of rich `gcloud` shell command fallback skills.
 
 ## 🚨 CRITICAL INSTRUCTIONS: MCP vs GCLOUD 🚨
 
-1. **Check for the MCP Server**: Before performing any action, check if the `agentregistry_prod` MCP server (and its tools like `list_agents`, `create_service`, `search_mcp_servers`, etc.) is available to you.
+1. **Check for the MCP Server**: Before performing any action, check if the `agentregistry` MCP server (and its tools like `list_agents`, `create_service`, `search_mcp_servers`, etc.) is available to you.
 2. **Retrieve Project ID**: Every MCP tool requires a `parent` or `name` formatted with the Google Cloud Project ID (e.g. `projects/{project_id}/locations/us-central1`).
    - You MUST run `run_shell_command("gcloud config get-value project")` to fetch the default project.
    - If no project is set and the user didn't provide one, **ask the user for the project ID** before attempting to use an MCP tool. Do NOT guess the project ID.
@@ -17,7 +17,7 @@ Welcome to the **Agent Registry** extension for the Gemini CLI! This extension p
 
 ```json
 "mcpServers": {
-  "agentregistry_prod": {
+  "agentregistry": {
     "httpUrl": "https://agentregistry.googleapis.com/mcp",
     "authProviderType": "google_credentials",
     "oauth": {
