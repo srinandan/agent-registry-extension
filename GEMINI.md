@@ -1,26 +1,30 @@
 # Agent Registry Extension
 
-Welcome to the **Agent Registry** extension for the Gemini CLI! This extension provides you with direct access to Google Cloud's Agent Registry via the remote `agentregistry_prod` MCP server.
+Welcome to the **Agent Registry** extension for the Gemini CLI! This extension provides you with direct access to Google Cloud's Agent Registry via the remote `agentregistry_prod` MCP server and a set of rich `gcloud` shell command fallback skills.
 
-## 🚨 CRITICAL INSTRUCTIONS 🚨
+## 🚨 CRITICAL INSTRUCTIONS: MCP vs GCLOUD 🚨
 
-**NEVER use the `run_shell_command` tool to execute `gcloud alpha agent-registry` or `gcloud beta agent-registry` commands.**
-When the user asks to list, search, create, update, or delete agents or MCP servers, you **MUST** use the native MCP tools provided by the `agentregistry_prod` server.
+1. **Check for the MCP Server**: Before performing any action, check if the `agentregistry_prod` MCP server (and its tools like `list_agents`, `create_service`, `search_mcp_servers`, etc.) is available to you.
+2. **If the MCP server is ENABLED**: You MUST prioritize using these native MCP tools over running `gcloud` shell commands. This is the preferred, fastest, and safest method.
+3. **If the MCP server is NOT ENABLED**:
+   - Briefly inform the user that they can enable the Agent Registry MCP Server in their global `~/.gemini/settings.json` for a better experience, and point them to the docs if needed. (See the example configuration below).
+   - **FALLBACK**: Use the `run_shell_command` tool to execute the `gcloud alpha agent-registry` commands as detailed in the `SKILL.md`.
 
-Available MCP tools provided by `agentregistry_prod`:
-- `list_agents`: Lists Agents in a given project and location (`parent` format: `projects/{project}/locations/{location}`).
-- `get_agent`: Gets details of a single Agent (`name` format: `projects/{project}/locations/{location}/agents/{agent}`).
-- `search_agents`: Search for Agents in a given project and location.
-- `list_mcp_servers`: Lists MCP Servers.
-- `get_mcp_server`: Gets details of an MCP Server.
-- `search_mcp_servers`: Search for MCP Servers.
-- `list_endpoints`: Lists Endpoints.
-- `get_endpoint`: Gets details of an Endpoint.
-- `list_services`: Lists Services.
-- `get_service`: Gets details of a Service.
-- `create_service`: Creates a new Service (Agent, Endpoint, or MCP Server).
-- `update_service`: Updates a Service.
-- `delete_service`: Deletes a Service.
+### Example settings.json Configuration for Users
+
+```json
+"mcpServers": {
+  "agentregistry_prod": {
+    "httpUrl": "https://agentregistry.googleapis.com/mcp",
+    "authProviderType": "google_credentials",
+    "oauth": {
+      "scopes": [
+        "https://www.googleapis.com/auth/agentregistry.read-write"
+      ]
+    }
+  }
+}
+```
 
 ### Quick Commands
 
@@ -34,4 +38,4 @@ Available MCP tools provided by `agentregistry_prod`:
    gemini extensions link .
    ```
 3. Restart your Gemini CLI session.
-4. Verify the extension is loaded by running `/extensions list` and test using `list_agents` with `parent: projects/{project}/locations/{location}`.
+4. Verify the extension is loaded by running `/extensions list`.
