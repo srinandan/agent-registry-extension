@@ -19,8 +19,9 @@ An extension for the Gemini CLI to interact with Google Cloud's Agent Registry u
 Install the extension by running the following command from your terminal:
 
 ```bash
-gemini extensions install https://github.com/srinandan/agent-registry-extension
+gemini extensions install https://github.com/srinandan/agent-registry-extension --auto-update
 ```
+The `--auto-update` is optional: if specified, it will update to new versions as they are released.
 
 You can confirm the installation by starting `gemini` and typing `/extensions list`. The response should include `agent-registry` similar to this:
 
