@@ -1,0 +1,10 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "https://api.salesforce.com/v1"
+    },
+    {
+      "pattern": "https://github.com/srinandan/agent-registry-extension.*"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './scripts/' # only scan scripts/ folder to avoid config/env files
+          format: tty
+          severity: error
+
+  validate-skill:
+    name: Validate SKILL.md
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install PyYAML
+      - name: Validate SKILL.md
+        run: python3 .github/scripts/validate_skill.py skills/agent-registry/SKILL.md
+
+  link-check:
+    name: Check for dead links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check README.md for dead links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          base-branch: main
+          file-path: README.md
+          config-file: .github/linters/mlc_config.json
+
+      - name: Check GEMINI.md for dead links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          base-branch: main
+          file-path: GEMINI.md
+          config-file: .github/linters/mlc_config.json
+
+      - name: Check SKILL.md for dead links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          base-branch: main
+          file-path: skills/agent-registry/SKILL.md
+          config-file: .github/linters/mlc_config.json

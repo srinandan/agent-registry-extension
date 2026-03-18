@@ -1,0 +1,6 @@
+{
+  "name": "agent-registry",
+  "version": "1.0.0",
+  "description": "Agent Registry Skill for Gemini CLI. Manage Agents, MCP Servers, and Endpoints on Google Cloud.",
+  "contextFileName": "GEMINI.md"
+}

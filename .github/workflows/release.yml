@@ -1,0 +1,31 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to create a GitHub Release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release archives
+        run: |
+          mkdir -p release
+
+          # Package all files in the repository EXCEPT for .git, .github, and the release folder itself
+          tar --exclude='./.git' --exclude='./.github' --exclude='./release' -czvf release/agent-registry.tar.gz .
+          zip -r release/agent-registry.zip . -x "*.git*" "*.github*" "*release*"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/agent-registry.tar.gz
+            release/agent-registry.zip
+          generate_release_notes: true

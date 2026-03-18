@@ -1,0 +1,18 @@
+# Gemini CLI Ignore File
+# Ignore version control systems
+.git/
+
+# Ignore CI/CD and scripts
+.github/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE configs
+.vscode/
+.idea/
+
+# Ignore python caches
+__pycache__/
+*.pyc
