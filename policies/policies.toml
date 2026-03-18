@@ -1,17 +1,17 @@
 [[rule]]
 mcpName = "agentregistry_prod"
-toolName = "create_agent"
+toolName = "create_service"
 decision = "ask_user"
 priority = 100
 
 [[rule]]
 mcpName = "agentregistry_prod"
-toolName = "update_agent"
+toolName = "update_service"
 decision = "ask_user"
 priority = 100
 
 [[rule]]
 mcpName = "agentregistry_prod"
-toolName = "delete_agent"
+toolName = "delete_service"
 decision = "ask_user"
 priority = 100
