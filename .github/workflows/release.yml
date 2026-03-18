@@ -14,6 +14,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: vars
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Inject version into files
+        run: |
+          TAG="${{ github.ref_name }}"
+          SHA="${{ steps.vars.outputs.sha }}"
+          VERSION="${TAG}+${SHA}"
+
+          # Update SKILL.md
+          sed -i "s/version: \".*\"/version: \"${VERSION}\"/" skills/agent-registry/SKILL.md
+
+          # Update gemini-extension.json
+          jq ".version = \"${VERSION}\"" gemini-extension.json > tmp.json && mv tmp.json gemini-extension.json
+
+          echo "Injected version: ${VERSION}"
+
       - name: Create release archives
         run: |
           mkdir -p release
