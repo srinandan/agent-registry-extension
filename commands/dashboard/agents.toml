@@ -1,0 +1,3 @@
+prompt = """
+!{${extensionPath}/scripts/agent-dashboard.sh}
+"""

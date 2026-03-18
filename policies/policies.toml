@@ -1,0 +1,17 @@
+[[rule]]
+mcpName = "agentregistry_prod"
+toolName = "create_agent"
+decision = "ask_user"
+priority = 100
+
+[[rule]]
+mcpName = "agentregistry_prod"
+toolName = "update_agent"
+decision = "ask_user"
+priority = 100
+
+[[rule]]
+mcpName = "agentregistry_prod"
+toolName = "delete_agent"
+decision = "ask_user"
+priority = 100
