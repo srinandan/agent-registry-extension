@@ -45,6 +45,9 @@ if [ $? -ne 0 ] || [ -z "$REGIONAL_AGENTS" ]; then
   REGIONAL_AGENTS="[]"
 fi
 
+TMP_FILE=$(mktemp)
+trap 'rm -f "$TMP_FILE"' EXIT
+
 # Combine and format
 echo "$GLOBAL_AGENTS $REGIONAL_AGENTS" | jq -s 'add | map({
   name: (.name | split("/") | last),
@@ -53,10 +56,10 @@ echo "$GLOBAL_AGENTS $REGIONAL_AGENTS" | jq -s 'add | map({
   runtime: (if .attributes["agentregistry.googleapis.com/system/RuntimeReference"].uri then
               (.attributes["agentregistry.googleapis.com/system/RuntimeReference"].uri | sub("^//"; "") | split("/") | if length > 4 then .[-2:] | join("/") else .[-1] end)
             else "-" end)
-})' > /tmp/agents_combined.json
+})' > "$TMP_FILE"
 
 # Check if we have agents
-COUNT=$(jq '. | length' /tmp/agents_combined.json)
+COUNT=$(jq '. | length' "$TMP_FILE")
 
 if [ "$COUNT" -eq 0 ]; then
   echo "No agents found in global or $LOCATION."
@@ -67,4 +70,4 @@ fi
 echo ""
 echo "| Name | Display Name | Location | Runtime |"
 echo "|------|--------------|----------|---------|"
-jq -r '.[] | "| \(.name) | \(.displayName // "-") | \(.location) | \(.runtime // "-") |"' /tmp/agents_combined.json
+jq -r '.[] | "| \(.name) | \(.displayName // "-") | \(.location) | \(.runtime // "-") |"' "$TMP_FILE"

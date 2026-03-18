@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# mcp-dashboard.sh - Generates a markdown table of MCP servers in the project
+# mcp-dashboard.sh - Generates a markdown table of mcp servers in the project
 
 PROJECT=$(gcloud config get-value project 2>/dev/null)
 LOCATION=$(gcloud config get-value compute/region 2>/dev/null)
@@ -26,12 +26,11 @@ if [ -z "$PROJECT" ]; then
   exit 1
 fi
 
-# Default location to us-central1 if not set
 if [ -z "$LOCATION" ]; then
   LOCATION="us-central1"
 fi
 
-echo "Fetching MCP servers for project: $PROJECT..." >&2
+echo "Fetching MCP Servers for project: $PROJECT..." >&2
 
 # Fetch global MCP servers
 GLOBAL_MCP=$(gcloud alpha agent-registry mcp-servers list --location=global --project="$PROJECT" --format=json --quiet 2>/dev/null)
@@ -45,22 +44,24 @@ if [ $? -ne 0 ] || [ -z "$REGIONAL_MCP" ]; then
   REGIONAL_MCP="[]"
 fi
 
+TMP_FILE=$(mktemp)
+trap 'rm -f "$TMP_FILE"' EXIT
+
 # Combine and format
 echo "$GLOBAL_MCP $REGIONAL_MCP" | jq -s 'add | map({
   name: (.name | split("/") | last),
   displayName: .displayName,
   location: (.name | split("/") | .[3]),
-  tools: (.tools | map(.name) | if length > 3 then (.[0:3] | join(", ")) + ", ..." else join(", ") end),
+  tools: (if .tools then (.tools | map(.name) | join(", ")) else "-" end),
   runtime: (if .attributes["agentregistry.googleapis.com/system/RuntimeReference"].uri then
               (.attributes["agentregistry.googleapis.com/system/RuntimeReference"].uri | sub("^//"; "") | split("/") | if length > 4 then .[-2:] | join("/") else .[-1] end)
             else "-" end)
-})' > /tmp/mcp_combined.json
+})' > "$TMP_FILE"
 
-# Check if we have servers
-COUNT=$(jq '. | length' /tmp/mcp_combined.json)
+COUNT=$(jq '. | length' "$TMP_FILE")
 
 if [ "$COUNT" -eq 0 ]; then
-  echo "No MCP servers found in global or $LOCATION."
+  echo "No MCP Servers found in global or $LOCATION."
   exit 0
 fi
 
@@ -68,4 +69,4 @@ fi
 echo ""
 echo "| Name | Display Name | Location | Tools | Runtime |"
 echo "|------|--------------|----------|-------|---------|"
-jq -r '.[] | "| \(.name) | \(.displayName // "-") | \(.location) | \(.tools // "-") | \(.runtime // "-") |"' /tmp/mcp_combined.json
+jq -r '.[] | "| \(.name) | \(.displayName // "-") | \(.location) | \(.tools) | \(.runtime // "-") |"' "$TMP_FILE"

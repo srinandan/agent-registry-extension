@@ -2,9 +2,10 @@
 
 Welcome to the **Agent Registry** extension for the Gemini CLI! This extension provides you with direct access to Google Cloud's Agent Registry via the remote `agentregistry_prod` MCP server.
 
-## Capabilities & Instructions
+## 🚨 CRITICAL INSTRUCTIONS 🚨
 
-With this extension enabled, you can manage resources on Google Cloud's Agent Registry using native MCP tools. **You must prefer these MCP tools over running `gcloud` shell commands.**
+**NEVER use the `run_shell_command` tool to execute `gcloud alpha agent-registry` or `gcloud beta agent-registry` commands.**
+When the user asks to list, search, create, update, or delete agents or MCP servers, you **MUST** use the native MCP tools provided by the `agentregistry_prod` server.
 
 Available MCP tools provided by `agentregistry_prod`:
 - `list_agents`: Lists Agents in a given project and location (`parent` format: `projects/{project}/locations/{location}`).

@@ -13,5 +13,9 @@
       }
     }
   },
+  "excludeTools": [
+    "run_shell_command(gcloud alpha agent-registry)",
+    "run_shell_command(gcloud beta agent-registry)"
+  ],
   "contextFileName": "GEMINI.md"
 }
