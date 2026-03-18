@@ -1,7 +1,0 @@
-{
-  "ignorePatterns": [
-    {
-      "pattern": "https://api.salesforce.com/v1"
-    }
-  ]
-}

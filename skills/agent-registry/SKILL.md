@@ -1,6 +1,9 @@
 ---
 name: agent-registry
 description: "Expertise in Google Cloud Agent Registry. Use when the user asks to manage, list, create, search or delete Agents, MCP Servers, and Endpoints on GCP."
+metadata:
+  author: "Srinandan"
+  version: "1.0.0"
 ---
 
 # Google Cloud Agent Registry Expert
@@ -30,178 +33,6 @@ You are an expert in managing Google Cloud's Agent Registry.
   }
 }
 ```
-
----
-name: agent-registry
-description: >
-  Use this skill whenever the user wants to interact with Google Cloud's Agent Registry
-  using gcloud commands. Triggers on any mention of "agent registry", "agent-registry",
-  "mcp-servers", "gcloud agents", "register an agent", "list agents", "create a service",
-  "agent service", or any request to manage agents, MCP servers, endpoints, or services
-  in Google Cloud Agent Registry. Also triggers on requests to integrate or use the
-  Google Agent Development Kit (ADK) with the Agent Registry.
-metadata:
-  author: srinandan
-  version: "0.1"
----
-
-# Google Cloud Agent Registry Skill
-
-Help users interact with the `gcloud alpha agent-registry` API by translating natural language into the correct gcloud command, showing it for approval, then executing it.
-
-## Workflow
-
-1. **Resolve session context** — at the start of each session, silently run:
-   ```bash
-   gcloud config get-value project 2>/dev/null
-   gcloud config get-value compute/region 2>/dev/null
-   ```
-   Store the results as `SESSION_PROJECT` and `SESSION_LOCATION`. Use these as defaults.
-
-2. **Parse** the user's request to identify the resource and action.
-3. **Construct** the gcloud command using session defaults.
-4. **Approval**:
-   - For `list` and `describe` commands: Skip explicit approval and execute immediately.
-   - For `create`, `delete`, or `update` commands: Show the command and ask for approval: _"Ready to run this command? (yes/no)"_
-5. **Execute** and display the output.
-
-## Auth & Setup
-
-```bash
-# Check auth
-gcloud auth list
-
-# Login
-gcloud auth login
-
-# Set project
-gcloud config set project PROJECT_ID
-
-# (Optional) Set API override if needed
-gcloud config set api_endpoint_overrides/agentregistry https://agentregistry.googleapis.com/
-```
-
-### IAM Permissions
-
-| Role | Access Level |
-|------|--------------|
-| `roles/agentregistry.admin` | Full administrative access |
-| `roles/agentregistry.editor` | Editor access |
-| `roles/agentregistry.viewer` | Read only access |
-
----
-
-## Resource Types & Registration
-
-The primary command for registering resources is `gcloud alpha agent-registry services create`.
-
-### 1. MCP Servers
-Used to register Model Context Protocol servers.
-
-```bash
-# Register an MCP Server (example: GitHub)
-# Ask user to paste contents of mcp-spec.json for --mcp-server-spec-content
-gcloud alpha agent-registry services create github \
-  --location=us-central1 \
-  --display-name="GitHub MCP Server" \
-  --description="Connects to GitHub" \
-  --mcp-server-spec-type=tool-spec \
-  --mcp-server-spec-content='PASTE_MCP_SPEC_JSON_HERE' \
-  --interfaces='[{"protocolBinding": "jsonrpc", "url": "https://api.github.com/mcp"}]'
-
-# List MCP Servers
-gcloud alpha agent-registry mcp-servers list --location=us-central1
-
-# Filter MCP Servers by Runtime
-gcloud alpha agent-registry mcp-servers list \
-  --location=us-central1 \
-  --filter="attributes.\"agentregistry.googleapis.com/system/RuntimeReference\".uri:reasoningEngine"
-
-# List Global MCP Servers
-gcloud alpha agent-registry mcp-servers list --location=global
-```
-
-### 2. Agents
-Used to register AI agents (e.g., A2A, Salesforce).
-
-```bash
-# Register an Agent (example: Salesforce)
-gcloud alpha agent-registry services create salesforce \
-  --location=us-central1 \
-  --display-name="Salesforce Agent" \
-  --description="Salesforce Einstein Agent" \
-  --agent-spec-type=no-spec \
-  --interfaces='[{"protocolBinding": "http-json", "url": "https://api.salesforce.com/agent/v1"}]'
-
-# Register an A2A Agent (Special Case)
-# Ask user to paste contents of agent_card.json for --agent-spec-content
-gcloud alpha agent-registry services create testa2a \
-  --location=us-central1 \
-  --display-name="Test A2A Agent" \
-  --description="Sample A2A Agent" \
-  --agent-spec-type=a2a-agent-card \
-  --agent-spec-content='PASTE_AGENT_CARD_JSON_HERE'
-
-# List Agents
-gcloud alpha agent-registry agents list --location=us-central1
-
-# List Global Agents
-gcloud alpha agent-registry agents list --location=global
-```
-
-### 3. Endpoints
-Used to register service endpoints (e.g., Vertex AI models).
-
-```bash
-# Register an Endpoint (example: Gemini Models)
-gcloud alpha agent-registry services create gemini-models \
-  --location=us-central1 \
-  --display-name="Vertex AI Model Garden" \
-  --description="List of all models in Vertex AI Model Garden" \
-  --endpoint-spec-type=no-spec \
-  --interfaces='[{"protocolBinding": "jsonrpc", "url": "https://us-central1-aiplatform.googleapis.com/v1beta1/publishers/*/models"}]'
-
-# List Endpoints
-gcloud alpha agent-registry endpoints list --location=us-central1
-
-# Update Endpoint Display Name
-gcloud alpha agent-registry services update gemini-models \
-  --display-name="Model Garden on Vertex AI" \
-  --location=us-central1
-```
-
-## Agent Dashboard
-
-The Agent Dashboard provides a consolidated view of all agents in the current project, searching across both `global` and the regional location (default: `us-central1`).
-
-To generate the dashboard, run:
-```bash
-./scripts/agent-dashboard.sh
-```
-
-The output will be a Markdown table containing the following fields:
-- **Name**: The ID of the agent.
-- **Display Name**: The human-readable name.
-- **Location**: The region where the agent is registered.
-- **Runtime**: The reference to the agent's runtime.
-
-### MCP Server Dashboard
-
-The MCP Server Dashboard provides a consolidated view of all MCP servers in the current project, searching across both `global` and the regional location (default: `us-central1`).
-
-To generate the dashboard, run:
-```bash
-./scripts/mcp-dashboard.sh
-```
-
-The output will be a Markdown table containing the following fields:
-- **Name**: The ID of the MCP server.
-- **Display Name**: The human-readable name.
-- **Location**: The region where it is registered.
-- **Tools**: List of tools provided by the server.
-- **Runtime**: The reference to the runtime.
-
----
 
 ## Detailed Command Reference
 
@@ -245,8 +76,8 @@ All commands support `--location` (required) and `--project` (optional).
 | "Show me all MCP servers where the runtime is my-runtime" | `gcloud alpha agent-registry mcp-servers list --location=us-central1 --filter="attributes.\"agentregistry.googleapis.com/system/RuntimeReference\".uri:my-runtime"` |
 | "List all global agents" | `gcloud alpha agent-registry agents list --location=global` |
 | "List global MCP servers" | `gcloud alpha agent-registry mcp-servers list --location=global` |
-| "show me a dashboard for my agents" | `./scripts/agent-dashboard.sh` |
-| "show me a dashboard for my mcp servers" | `./scripts/mcp-dashboard.sh` |
+| "show me a dashboard for my agents" | `/dashboard:agents` |
+| "show me a dashboard for my mcp servers" | `/dashboard:mcp` |
 | "Change display name of gemini-models to 'Vertex AI Model Garden'" | `gcloud alpha agent-registry services update gemini-models --display-name="..." --location=us-central1` |
 | "Which agents in us-central1 are based on reasoning engine?" | `gcloud alpha agent-registry agents list --location=us-central1 --filter="attributes.\"agentregistry.googleapis.com/system/RuntimeReference\".uri:reasoningEngine"` |
 | "List all vertex ai agents" | `gcloud alpha agent-registry agents list --location=us-central1 --filter="attributes.\"agentregistry.googleapis.com/system/RuntimeReference\".uri:reasoningEngine"` |
@@ -377,7 +208,7 @@ If you encounter an unexpected problem, bug, or a failure that you cannot resolv
 4. Ask for final approval before running the command.
 5. Once approved, use the `gh` CLI to create the issue in the repository. For example:
    ```bash
-   gh issue create --repo srinandan/agent-registry-extension --title "Title of the bug" --body "Description of the bug, including error messages and steps to reproduce."
+   gh issue create --repo agentskills/agent-registry-skill --title "Title of the bug" --body "Description of the bug, including error messages and steps to reproduce."
    ```
 
 ---
