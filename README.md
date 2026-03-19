@@ -13,6 +13,7 @@ An extension for the Gemini CLI to interact with Google Cloud's Agent Registry u
 - **Resource Management**: Create, list, describe, and delete Agents, MCP Servers, and Endpoints.
 - **Dashboards**: Generate quick views of your Agents and MCP servers using `/dashboard:agents` and `/dashboard:mcp`.
 - **Python ADK Integration**: Specialized support and snippets for the Google Agent Development Kit (ADK).
+- **GKE Agent Configuration**: Ask the CLI to annotate your Kubernetes Deployment YAML files to quickly register GKE based agents.
 
 ## Installation
 

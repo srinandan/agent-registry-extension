@@ -39,26 +39,35 @@ def process_file(filepath, annotation_type):
         in_annotations = False
         annotations_indent = -1
         annotation_added = False
+        seen_root_metadata = False
 
         for line in doc_lines:
-            # Find root metadata block
-            metadata_match = re.match(r'^(\s*)metadata:\s*$', line)
-            if metadata_match and not in_metadata:
+            # We only care about the FIRST metadata block (the root one for the Deployment)
+            metadata_match = re.match(r'^(\s*)metadata:\s*(.*)$', line)
+            if metadata_match and not seen_root_metadata:
                 in_metadata = True
+                seen_root_metadata = True
                 metadata_indent = len(metadata_match.group(1))
                 out_doc.append(line)
                 continue
 
             if in_metadata:
-                # Check if we exited metadata block
                 current_indent_match = re.match(r'^(\s*)\S', line)
                 if current_indent_match:
                     current_indent = len(current_indent_match.group(1))
 
                     # If we hit a root level key (like spec:) or another block at same level as metadata
                     if current_indent <= metadata_indent and not line.strip().startswith('-'):
-                        # If we never found annotations, we need to add the block before we exit metadata
-                        if not in_annotations and not annotation_added:
+                        # Exiting metadata. Did we ever find annotations?
+                        if in_annotations and not annotation_added:
+                            # We were inside annotations block at the end of metadata
+                            new_indent_str = " " * (annotations_indent + 2)
+                            out_doc.append(f"{new_indent_str}apphub.cloud.google.com/functional-type: \"{annotation_type}\"\n")
+                            print(f"  Added {annotation_type} to existing annotations in {filepath}")
+                            file_modified = True
+                            annotation_added = True
+                        elif not annotation_added:
+                            # We never found an annotations block. Add it before exiting metadata
                             new_indent_str = " " * (metadata_indent + 2)
                             out_doc.append(f"{new_indent_str}annotations:\n")
                             out_doc.append(f"{new_indent_str}  apphub.cloud.google.com/functional-type: \"{annotation_type}\"\n")
@@ -72,17 +81,37 @@ def process_file(filepath, annotation_type):
                         continue
 
                 # We are inside metadata. Look for annotations block.
-                annotations_match = re.match(r'^(\s*)annotations:\s*$', line)
+                # It could be 'annotations:' or 'annotations: {}'
+                annotations_match = re.match(r'^(\s*)annotations:\s*(.*)$', line)
                 if annotations_match and not in_annotations:
                     in_annotations = True
                     annotations_indent = len(annotations_match.group(1))
+
+                    # If it's inline like `annotations: {}`, we should expand it or at least handle it.
+                    # For simplicity, if they have an inline object, we'll replace the line.
+                    inline_val = annotations_match.group(2).strip()
+                    if inline_val == '{}':
+                        out_doc.append(f"{annotations_match.group(1)}annotations:\n")
+                        new_indent_str = " " * (annotations_indent + 2)
+                        out_doc.append(f"{new_indent_str}apphub.cloud.google.com/functional-type: \"{annotation_type}\"\n")
+                        print(f"  Expanded empty inline annotations and added {annotation_type} in {filepath}")
+                        file_modified = True
+                        annotation_added = True
+                        continue
+                    elif inline_val and not inline_val.startswith('#'):
+                        # Complex inline object, log a warning and don't touch
+                        print(f"  WARNING: Cannot parse inline annotations in {filepath}. Skipping.")
+                        annotation_added = True # Prevents us from messing it up later
+                        out_doc.append(line)
+                        continue
+
                     out_doc.append(line)
                     continue
 
                 if in_annotations and not annotation_added:
                     if current_indent_match:
                         current_indent = len(current_indent_match.group(1))
-                        # Check if we exited annotations block
+                        # Check if we exited annotations block but are still in metadata
                         if current_indent <= annotations_indent and not line.strip().startswith('-'):
                             # Exiting annotations block without finding our target annotation. Add it.
                             new_indent_str = " " * (annotations_indent + 2)
@@ -111,7 +140,7 @@ def process_file(filepath, annotation_type):
 
             out_doc.append(line)
 
-        # End of document. If we were still in metadata but never added it (e.g., metadata is the last block)
+        # End of document. If we were still in metadata but never added it (e.g., metadata is the last block in file)
         if is_deployment and in_metadata and not annotation_added:
             if not in_annotations:
                 new_indent_str = " " * (metadata_indent + 2)
