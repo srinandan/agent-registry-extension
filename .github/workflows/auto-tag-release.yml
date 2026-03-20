@@ -1,0 +1,56 @@
+name: Auto Tag Release
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  auto-tag:
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Check out the target branch (main) explicitly to avoid missing refs
+          # from the closed PR.
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+          # We MUST use a Personal Access Token (PAT) here if we want the pushed
+          # tag to trigger the existing release.yml workflow. Pushes using the
+          # default GITHUB_TOKEN will not trigger subsequent workflows.
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Extract Tag
+        id: extract_tag
+        run: |
+          # The branch name will be something like `release/v1.0.1`
+          # We extract the `v1.0.1` part
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          TAG_NAME="${BRANCH_NAME#release/}"
+
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "Extracted tag: ${TAG_NAME}"
+
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and Push Tag
+        run: |
+          TAG_NAME="${{ steps.extract_tag.outputs.tag_name }}"
+          MERGE_SHA="${{ github.event.pull_request.merge_commit_sha }}"
+
+          # The PR was merged into main, so we tag the exact merge commit
+          git tag -a "${TAG_NAME}" -m "Release ${TAG_NAME}" "${MERGE_SHA}"
+
+          # Push the tag. If PAT_TOKEN was provided to checkout, this will
+          # trigger the release.yml workflow.
+          git push origin "${TAG_NAME}"
+          echo "Pushed tag ${TAG_NAME} successfully."

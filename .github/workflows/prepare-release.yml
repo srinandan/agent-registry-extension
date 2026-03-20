@@ -1,0 +1,79 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The new version (e.g., 1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Using a PAT allows the created PR to trigger other workflows (like CI)
+          # If PAT_TOKEN is not set, it falls back to the default GITHUB_TOKEN
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create Release Branch
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          git checkout -b "release/v${INPUT_VERSION}"
+
+      - name: Update Version in Files
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          # Update SKILL.md (handles quoted or unquoted version strings in frontmatter)
+          sed -i -E "s/^version: .+$/version: \"${INPUT_VERSION}\"/" skills/agent-registry/SKILL.md
+
+          # Update gemini-extension.json
+          jq ".version = \"${INPUT_VERSION}\"" gemini-extension.json > tmp.json && mv tmp.json gemini-extension.json
+
+          echo "Updated version to: ${INPUT_VERSION}"
+
+      - name: Commit and Push
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          git add skills/agent-registry/SKILL.md gemini-extension.json
+
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit. The version might already be set to ${INPUT_VERSION}."
+            exit 0
+          fi
+
+          git commit -m "chore: prepare release v${INPUT_VERSION}"
+          git push origin "release/v${INPUT_VERSION}"
+
+      - name: Create Pull Request
+        # Only run if the previous step actually pushed a branch
+        if: success()
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          # Use PAT if available to trigger CI on the new PR, else default token
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if branch exists on remote before trying to create PR
+          if git ls-remote --exit-code --heads origin "release/v${INPUT_VERSION}"; then
+            gh pr create \
+              --base main \
+              --head "release/v${INPUT_VERSION}" \
+              --title "chore: prepare release v${INPUT_VERSION}" \
+              --body "This PR prepares the release for version **${INPUT_VERSION}** by updating the version fields in \`gemini-extension.json\` and \`skills/agent-registry/SKILL.md\`."
+          fi
