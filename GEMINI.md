@@ -4,13 +4,14 @@ Welcome to the **Agent Registry** extension for the Gemini CLI! This extension p
 
 ## 🚨 CRITICAL INSTRUCTIONS: MCP vs GCLOUD 🚨
 
-1. **Check for the MCP Server**: Before performing any action, check if the `agentregistry` MCP server (and its tools like `list_agents`, `create_service`, `search_mcp_servers`, etc.) is available to you.
+1. **Check for the MCP Server**: Before performing any action, check if the `agentregistry` MCP server is available to you. Check your available tools. If `list_agents`, `create_service`, or `search_mcp_servers` are present, the MCP path is active.
 2. **Retrieve Project ID**: Every MCP tool requires a `parent` or `name` formatted with the Google Cloud Project ID (e.g. `projects/{project_id}/locations/us-central1`).
    - You MUST run `run_shell_command("gcloud config get-value project")` to fetch the default project.
    - If no project is set and the user didn't provide one, **ask the user for the project ID** before attempting to use an MCP tool. Do NOT guess the project ID.
 3. **If the MCP server is ENABLED**: You MUST prioritize using these native MCP tools over running `gcloud` shell commands. This is the preferred, fastest, and safest method.
-4. **If the MCP server is NOT ENABLED**:
-   - Briefly inform the user that they can enable the Agent Registry MCP Server in their global `~/.gemini/settings.json` for a better experience, and point them to the docs if needed. (See the example configuration below).
+4. **Confirmation Guard for Destructive Operations**: For any destructive operation (e.g., delete) — via MCP OR gcloud — always summarize what will happen and ask: "Ready to proceed? (yes/no)" before executing.
+5. **If the MCP server is NOT ENABLED**:
+   - Briefly inform the user that they can enable the Agent Registry MCP Server in their global `~/.gemini/settings.json` for a better experience, and point them to the docs if needed. Only suggest enabling MCP if this is the first time this session the user has invoked the fallback path.
    - **FALLBACK**: Use the `run_shell_command` tool to execute the `gcloud alpha agent-registry` commands as detailed in the `SKILL.md`.
 
 ### Example settings.json Configuration for Users

@@ -17,8 +17,9 @@ You are an expert in managing Google Cloud's Agent Registry.
    - You MUST run `run_shell_command("gcloud config get-value project")` to fetch the default project.
    - If no project is set and the user didn't provide one, **ask the user for the project ID** before attempting to use an MCP tool. Do NOT guess the project ID.
 3. **If the MCP server is ENABLED**: You MUST prioritize using these native MCP tools over running `gcloud` shell commands. This is the preferred, fastest, and safest method.
-4. **If the MCP server is NOT ENABLED**:
-   - Briefly inform the user that they can enable the Agent Registry MCP Server in their global `~/.gemini/settings.json` for a better experience, and point them to the docs if needed. (See the example configuration below).
+4. **Confirmation Guard for Destructive Operations**: For any destructive operation (e.g., delete) — via MCP OR gcloud — always summarize what will happen and ask: "Ready to proceed? (yes/no)" before executing.
+5. **If the MCP server is NOT ENABLED**:
+   - Briefly inform the user that they can enable the Agent Registry MCP Server in their global `~/.gemini/settings.json` for a better experience, and point them to the docs if needed. Only suggest enabling MCP if this is the first time this session the user has invoked the fallback path.
    - **FALLBACK**: Use the `run_shell_command` tool to execute the `gcloud alpha agent-registry` commands as detailed in the "Detailed Command Reference" section below.
 
 ### Example settings.json Configuration for Users
@@ -48,6 +49,15 @@ All commands support `--location` (required) and `--project` (optional).
 | `endpoints` | `list`, `describe` |
 | `services` | `create`, `list`, `describe`, `update`, `delete` |
 | `operations` | `list`, `describe` |
+
+### Pagination
+
+If output appears truncated or contains a `nextPageToken`, inform the user and ask if they want to fetch the next page.
+
+```bash
+# List with pagination
+gcloud alpha agent-registry agents list --location=LOCATION --page-size=50
+```
 
 ### Service Creation Flags
 
