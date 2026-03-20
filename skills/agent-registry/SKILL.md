@@ -118,6 +118,21 @@ gcloud alpha agent-registry agents list \
 
 ---
 
+## GKE Based Agents
+
+When a user asks to configure, annotate, or manage **GKE based agents** or GKE deployments for the Agent Registry, you should assist them by annotating their Kubernetes Deployment YAML files with the `apphub.cloud.google.com/functional-type` annotation.
+
+Follow these steps:
+1. **Ask for the Folder**: Ask the user if they want to process files in the current directory (`.`) or provide a specific folder path.
+2. **Ask for the Type**: Ask whether the functional type should be `AGENT` or `MCP_SERVER`.
+3. **Run the Script**: Once you have both inputs, use the `run_shell_command` tool to execute the provided pure-Python script:
+   ```bash
+   python3 scripts/annotate_gke.py <folder> <TYPE>
+   ```
+4. **Warn the User**: Inform the user that the script modifies the files in-place and preserves their formatting and comments.
+
+---
+
 ## Python ADK Integration
 
 The Google Agent Development Kit (ADK) allows seamless integration with the Agent Registry.
