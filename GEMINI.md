@@ -34,6 +34,28 @@ Welcome to the **Agent Registry** extension for the Gemini CLI! This extension p
 
 - **Dashboards**: Run `/dashboard:agents` or `/dashboard:mcp` to run bash scripts that output quick consolidated views.
 
+## Error Handling
+
+If a command fails:
+1. Check if `gcloud alpha` component is installed.
+   - Required (minimum): **Google Cloud SDK 560.0.0 or higher**
+   - Required (minimum): **alpha component 2026.03.09 or higher**
+2. Verify the `--location` (some resources may be in `global` or specific regions).
+3. Ensure JSON payloads for `--interfaces` or specs are correctly quoted for the shell.
+4. Check project permissions for `agentregistry.googleapis.com`.
+
+### Bug Reporting
+
+If you encounter an unexpected problem, bug, or a failure that you cannot resolve:
+1. Ask the user if they would like to create a GitHub issue for this bug.
+2. If the user agrees, generate a descriptive title and body for the issue based on the error context.
+3. Show the user the proposed issue content and the command to create it.
+4. Ask for final approval before running the command.
+5. Once approved, use the `gh` CLI to create the issue in the repository. For example:
+   ```bash
+   gh issue create --repo srinandan/agent-registry-extension --title "Title of the bug" --body "Description of the bug, including error messages and steps to reproduce."
+   ```
+
 ## Developer Instructions (Local Testing)
 
 1. Open your terminal and navigate to the root directory of this extension.

@@ -59,6 +59,15 @@ If output appears truncated or contains a `nextPageToken`, inform the user and a
 gcloud alpha agent-registry agents list --location=LOCATION --page-size=50
 ```
 
+### JSON Output
+
+For multi-resource operations or scripted output (like fetching data for a dashboard or parsing attributes), you should always append `--format=json` to the command so the output is easily parseable.
+
+```bash
+# Fetch data as JSON
+gcloud alpha agent-registry agents list --location=LOCATION --format=json
+```
+
 ### Service Creation Flags
 
 | Flag | Description |
