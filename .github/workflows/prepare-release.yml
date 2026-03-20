@@ -39,7 +39,7 @@ jobs:
           INPUT_VERSION: ${{ inputs.version }}
         run: |
           # Update SKILL.md (handles quoted or unquoted version strings in frontmatter)
-          sed -i -E "s/^version: .+$/version: \"${INPUT_VERSION}\"/" skills/agent-registry/SKILL.md
+          sed -i -E "s/^([[:space:]]*)version: .+$/\1version: \"${INPUT_VERSION}\"/" skills/agent-registry/SKILL.md
 
           # Update gemini-extension.json
           jq ".version = \"${INPUT_VERSION}\"" gemini-extension.json > tmp.json && mv tmp.json gemini-extension.json
