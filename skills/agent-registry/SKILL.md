@@ -156,6 +156,9 @@ Follow these steps:
 
 The Google Agent Development Kit (ADK) allows seamless integration with the Agent Registry.
 
+> [!IMPORTANT]
+> **Before generating full ADK code or advising on architecture**, always consult the `references/adk-docs.md` file to fetch the latest complete documentation. The snippets below are only basic references.
+
 ### 1. Requirements & Setup
 - **ADK Version**: 1.26.0 or higher (minimum).
 - **Installation**:
