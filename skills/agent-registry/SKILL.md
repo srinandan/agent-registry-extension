@@ -255,5 +255,4 @@ If you encounter an unexpected problem, bug, or a failure that you cannot resolv
 
 ## ADK Reference
 
-If the user asks about ADK, read `references/adk-docs.md` for instructions
-on which URL to fetch.
+**Before generating full ADK code or advising on architecture**, you must always consult the `references/adk-docs.md` file. It contains the latest complete documentation, prerequisites, and code examples for the Google Cloud Agent Registry integration within the Agent Development Kit (ADK).
