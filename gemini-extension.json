@@ -4,8 +4,8 @@
   "description": "Agent Registry Skill for Gemini CLI. Manage Agents, MCP Servers, and Endpoints on Google Cloud.",
   "contextFileName": "GEMINI.md",
   "contextFiles": [
-    "skills/agent-registry/SKILL.md",
     "references/adk-docs.md",
+    "skills/agent-registry/SKILL.md",
     "references/gcloud-command.md"
   ]
 }
