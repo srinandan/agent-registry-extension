@@ -7,5 +7,16 @@
     "references/adk-docs.md",
     "skills/agent-registry/SKILL.md",
     "references/gcloud-command.md"
-  ]
+  ],
+  "mcpServers": {
+    "agentregistry": {
+      "httpUrl": "https://agentregistry.googleapis.com/mcp",
+      "authProviderType": "google_credentials",
+      "oauth": {
+        "scopes": [
+          "https://www.googleapis.com/auth/agentregistry.read-write"
+        ]
+      }
+    }
+  }
 }
