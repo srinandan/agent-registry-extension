@@ -3,7 +3,7 @@ name: agent-registry
 description: "Expertise in Google Cloud Agent Registry. Use when the user asks to manage, list, create, search or delete Agents, MCP Servers, and Endpoints on GCP."
 metadata:
   author: "Srinandan"
-  version: "1.0.0"
+  version: "0.3.0"
 ---
 
 # Google Cloud Agent Registry Expert
