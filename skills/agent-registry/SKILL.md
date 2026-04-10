@@ -9,7 +9,7 @@ description: >
   Google Agent Development Kit (ADK) with the Agent Registry.
 metadata:
   author: srinandan
-  version: "0.1"
+  version: "0.4.0"
 ---
 
 # Google Cloud Agent Registry Skill
