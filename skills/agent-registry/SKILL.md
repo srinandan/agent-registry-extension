@@ -148,6 +148,22 @@ Used to configure Kubernetes deployments to be registered as an Agent or MCP Ser
 ./scripts/annotate_gke.py /path/to/folder_or_file.yaml --type AGENT
 ```
 
+### 5. Bindings
+Bindings connect a source agent to a target resource.
+
+*   **Create a binding**:
+    `gcloud alpha agent-registry bindings create [BINDING_ID] --agent=[AGENT_ID] --target=[TARGET_RESOURCE_ID] --location=[LOCATION]`
+*   **Create a binding with delegated permissions**:
+    `gcloud alpha agent-registry bindings create [BINDING_ID] --agent=[AGENT_ID] --target=[TARGET_RESOURCE_ID] --auth-provider=[AUTH_PROVIDER_ID] --location=[LOCATION]`
+*   **List bindings**:
+    `gcloud alpha agent-registry bindings list --location=[LOCATION]`
+*   **View binding details**:
+    `gcloud alpha agent-registry bindings describe [BINDING_ID] --location=[LOCATION]`
+*   **Update a binding**:
+    `gcloud alpha agent-registry bindings update [BINDING_ID] --target=[NEW_TARGET_ID] --location=[LOCATION]`
+*   **Delete a binding**:
+    `gcloud alpha agent-registry bindings delete [BINDING_ID] --location=[LOCATION]`
+
 ## Agent Dashboard
 
 The Agent Dashboard provides a consolidated view of all agents in the current project, searching across both `global` and the regional location (default: `us-central1`).
@@ -192,6 +208,7 @@ All commands support `--location` (required) and `--project` (optional).
 | `endpoints` | `list`, `describe` |
 | `services` | `create`, `list`, `describe`, `update`, `delete` |
 | `operations` | `list`, `describe` |
+| `bindings` | `create`, `list`, `describe`, `update`, `delete` |
 
 ### Service Creation Flags
 
@@ -238,6 +255,9 @@ All commands support `--location` (required) and `--project` (optional).
 | "Search for agents by skill name model" | `gcloud alpha agent-registry agents search --location=us-central1 --search-string="skills.name:model"` |
 | "Search for agents with display name containing Assessor" | `gcloud alpha agent-registry agents search --location=us-central1 --search-string="displayName:Assessor*"` |
 | "Search for MCP servers containing the display name GitHub" | `gcloud alpha agent-registry mcp-servers search --location=us-central1 --search-string="displayName:GitHub*"` |
+| "Create a binding for agent X to target Y" | `gcloud alpha agent-registry bindings create my-binding --agent=X --target=Y --location=us-central1` |
+| "List all bindings" | `gcloud alpha agent-registry bindings list --location=us-central1` |
+| "Show details for binding Z" | `gcloud alpha agent-registry bindings describe Z --location=us-central1` |
 
 ---
 
@@ -446,8 +466,8 @@ Only ask for what's strictly needed — don't overwhelm the user.
 
 If a command fails:
 1. Check if `gcloud alpha` component is installed.
-   - Required (minimum): **Google Cloud SDK 560.0.0 or higher**
-   - Required (minimum): **alpha component 2026.03.09 or higher**
+   - Required (minimum): **Google Cloud SDK 565.0.0 or higher**
+   - Required (minimum): **alpha component 2026.04.10 or higher**
 2. Verify the `--location` (some resources may be in `global` or specific regions).
 3. Ensure JSON payloads for `--interfaces` or specs are correctly quoted for the shell.
 4. Check project permissions for `agentregistry.googleapis.com`.

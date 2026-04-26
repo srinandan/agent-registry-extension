@@ -102,6 +102,28 @@ The AgentRegistry constructor accepts the following arguments:
 - `location` (str, required): The Google Cloud location/region, such as "global", "us-central1".
 - `header_provider` (Callable, optional): A callable that takes a ReadonlyContext and returns a dictionary of custom headers to be included in requests made by the [McpToolset](https://google.github.io/adk-docs/tools-custom/mcp-tools/#mcptoolset-class) or [RemoteA2aAgent](https://google.github.io/adk-docs/a2a/quickstart-consuming-go/#quickstart-consuming-a-remote-agent-via-a2a) to the target services. This does not affect headers used to call the Agent Registry API itself.
 
+### Example: Custom Header Provider for Authentication
+
+If your target MCP server or Agent requires authentication (e.g., Google OAuth), you can use the `header_provider` to dynamically inject tokens:
+
+```python
+import google.auth
+from google.auth.transport.requests import Request
+from google.adk.integrations.agent_registry import AgentRegistry
+
+def google_auth_header_provider(context):
+    creds, _ = google.auth.default()
+    if not creds.valid:
+        creds.refresh(Request())
+    return {"Authorization": f"Bearer {creds.token}"}
+
+registry = AgentRegistry(
+    project_id=project_id,
+    location=location,
+    header_provider=google_auth_header_provider
+)
+```
+
 ## Additional resources
 - [Sample Agent Code](https://github.com/google/adk-python/tree/main/contributing/samples/agent_registry_agent)
 - [Agent Registry Client](https://github.com/google/adk-python/blob/main/src/google/adk/integrations/agent_registry/agent_registry.py)
