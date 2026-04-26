@@ -61,9 +61,9 @@ If you choose not to configure the MCP server, this extension acts as a standard
 
 ## Prerequisites
 
-- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) version **560.0.0** or higher (minimum).
-- `gcloud alpha` component version **2026.03.09** or higher (minimum).
-- **Google ADK** version **1.26.0** or higher (minimum) for Python integration.
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) version **565.0.0** or higher (minimum).
+- `gcloud alpha` component version **2026.04.10** or higher (minimum).
+- **Google ADK** version **1.31.0** or higher (minimum) for Python integration.
 - Proper permissions to access Agent Registry in your Google Cloud project.
 
 ## Support
